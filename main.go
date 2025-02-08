@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,13 @@ func initRouter() *gin.Engine {
 	})
 
 	r.POST("upload", func(c *gin.Context) {
-		c.JSON(http.StatusNotImplemented, nil)
+		file, _ := c.FormFile("file")
+
+		if filepath.Ext(file.Filename) != ".zip" {
+			c.JSON(http.StatusUnprocessableEntity, nil)
+		}
+
+		c.JSON(http.StatusOK, nil)
 	})
 
 	return r
