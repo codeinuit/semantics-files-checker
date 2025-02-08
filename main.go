@@ -13,6 +13,10 @@ func initRouter() *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
+	r.POST("upload", func(c *gin.Context) {
+		c.JSON(http.StatusNotImplemented, nil)
+	})
+
 	return r
 }
 
