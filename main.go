@@ -1,34 +1,9 @@
 package main
 
 import (
-	"net/http"
-	"path/filepath"
-
-	"github.com/gin-gonic/gin"
+	"github.com/codeinuit/semantics-files-checker/internal/handler"
 )
 
-func initRouter() *gin.Engine {
-	r := gin.Default()
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
-	r.POST("upload", func(c *gin.Context) {
-		file, _ := c.FormFile("file")
-
-		if filepath.Ext(file.Filename) != ".zip" {
-			c.JSON(http.StatusUnprocessableEntity, nil)
-		}
-
-		c.JSON(http.StatusOK, nil)
-	})
-
-	return r
-}
-
 func main() {
-	r := initRouter()
-
-	r.Run()
+	handler.NewRouter().Run()
 }
