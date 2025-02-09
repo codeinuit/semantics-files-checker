@@ -12,12 +12,13 @@ import (
 
 	"github.com/codeinuit/semantics-files-checker/internal/handler"
 	"github.com/codeinuit/semantics-files-checker/internal/models"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRouter(t *testing.T) {
-	r := handler.NewRouter()
+	r := handler.NewRouter(&handler.Handler{Log: logrus.New()})
 
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
@@ -29,7 +30,7 @@ func TestRouter(t *testing.T) {
 }
 
 func TestUpload(t *testing.T) {
-	r := handler.NewRouter()
+	r := handler.NewRouter(&handler.Handler{Log: logrus.New()})
 
 	buf := bytes.NewBuffer(nil)
 	bodyWriter := multipart.NewWriter(buf)
