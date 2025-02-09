@@ -40,7 +40,7 @@ func (h Handler) UploadZip(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, nil)
 	}
 
-	students := make(map[string][]string)
+	students := make(map[string]models.Student)
 
 	for _, file := range zr.File {
 		slice := strings.Split(file.Name, "/")
@@ -53,13 +53,22 @@ func (h Handler) UploadZip(c *gin.Context) {
 		_, ok := students[student]
 		if !ok {
 			h.Log.Debugf("added path: %s", student)
-			students[student] = []string{}
+			students[student] = models.Student{
+				Name: student,
+			}
 		}
 
 		if !file.FileInfo().IsDir() {
 			folder := filepath.Base(filepath.Dir(file.Name))
 			h.Log.Infof("file %s in folder %s", filepath.Base(file.Name), folder)
-			students[student] = append(students[student], filepath.Base(file.Name))
+			//students[student] = append(students[student], filepath.Base(file.Name))
+			stu := students[student]
+			stu.Files = append(stu.Files, models.File{
+				Name: filepath.Base(file.Name),
+				Path: file.Name,
+			})
+
+			students[student] = stu
 		}
 	}
 
@@ -67,6 +76,8 @@ func (h Handler) UploadZip(c *gin.Context) {
 	for n := range students {
 		resp.Students = append(resp.Students, n)
 	}
+
+	h.Log.Info(students)
 
 	c.JSON(http.StatusOK, resp)
 }
