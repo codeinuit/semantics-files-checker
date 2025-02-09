@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/codeinuit/semantics-files-checker/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,11 +56,13 @@ func NewRouter() *gin.Engine {
 			fmt.Printf("folder found: %s\n", file.Name)
 		}
 
+		var resp model.UploadResultResponse
 		for n, val := range students {
 			fmt.Printf("student found: %s with files %s\n", n, val)
+			resp.Students = append(resp.Students, n)
 		}
 
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, resp)
 	})
 
 	return r

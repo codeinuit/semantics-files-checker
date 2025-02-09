@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/codeinuit/semantics-files-checker/internal/handler"
+	"github.com/codeinuit/semantics-files-checker/internal/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -55,4 +57,10 @@ func TestUpload(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+
+	var res model.UploadResultResponse
+	assert.NoError(t, json.NewDecoder(w.Body).Decode(&res))
+	req.Body.Close()
+
+	assert.Len(t, res.Students, 3)
 }
