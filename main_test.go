@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/codeinuit/semantics-files-checker/internal/handler"
-	"github.com/codeinuit/semantics-files-checker/internal/model"
+	"github.com/codeinuit/semantics-files-checker/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -58,7 +58,7 @@ func TestUpload(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var res model.UploadResultResponse
+	var res models.UploadResultResponse
 	assert.NoError(t, json.NewDecoder(w.Body).Decode(&res))
 	req.Body.Close()
 
