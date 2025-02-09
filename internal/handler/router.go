@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/codeinuit/semantics-files-checker/internal/models"
 	"github.com/gin-gonic/gin"
@@ -42,20 +43,28 @@ func (h Handler) UploadZip(c *gin.Context) {
 	students := make(map[string][]string)
 
 	for _, file := range zr.File {
-		if !file.FileInfo().IsDir() {
-			folder := filepath.Base(filepath.Dir(file.Name))
-			h.Log.Infof("file %s in folder %s", filepath.Base(file.Name), folder)
-			students[folder] = append(students[folder], filepath.Base(file.Name))
-
+		slice := strings.Split(file.Name, "/")
+		if len(slice) <= 1 {
 			continue
 		}
 
-		h.Log.Infof("folder found: %s", file.Name)
+		student := slice[1]
+
+		_, ok := students[student]
+		if !ok {
+			h.Log.Debugf("added path: %s", student)
+			students[student] = []string{}
+		}
+
+		if !file.FileInfo().IsDir() {
+			folder := filepath.Base(filepath.Dir(file.Name))
+			h.Log.Infof("file %s in folder %s", filepath.Base(file.Name), folder)
+			students[student] = append(students[student], filepath.Base(file.Name))
+		}
 	}
 
 	var resp models.UploadResultResponse
-	for n, val := range students {
-		h.Log.Infof("student found: %s with files %s", n, val)
+	for n := range students {
 		resp.Students = append(resp.Students, n)
 	}
 

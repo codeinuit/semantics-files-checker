@@ -18,7 +18,9 @@ import (
 )
 
 func TestRouter(t *testing.T) {
-	r := handler.NewRouter(&handler.Handler{Log: logrus.New()})
+	log := logrus.New()
+	log.SetLevel(logrus.DebugLevel)
+	r := handler.NewRouter(&handler.Handler{Log: log})
 
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
@@ -30,7 +32,9 @@ func TestRouter(t *testing.T) {
 }
 
 func TestUpload(t *testing.T) {
-	r := handler.NewRouter(&handler.Handler{Log: logrus.New()})
+	log := logrus.New()
+	log.SetLevel(logrus.DebugLevel)
+	r := handler.NewRouter(&handler.Handler{Log: log})
 
 	buf := bytes.NewBuffer(nil)
 	bodyWriter := multipart.NewWriter(buf)
@@ -64,4 +68,6 @@ func TestUpload(t *testing.T) {
 	req.Body.Close()
 
 	assert.Len(t, res.Students, 3)
+	expectedList := []string{"Matt HURE", "Boite ENCARTON", "Michel FOREVER"}
+	assert.ElementsMatch(t, res.Students, expectedList)
 }
