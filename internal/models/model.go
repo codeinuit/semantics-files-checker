@@ -8,6 +8,7 @@ type File struct {
 type Student struct {
 	Name  string
 	Files []File
+	OK    bool
 }
 
 func (s Student) FilenameSlice() []string {

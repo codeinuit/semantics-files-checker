@@ -70,4 +70,18 @@ func TestUpload(t *testing.T) {
 	assert.Len(t, res.Students, 3)
 	expectedList := []string{"Matt HURE", "Boite ENCARTON", "Michel FOREVER"}
 	assert.ElementsMatch(t, res.Students, expectedList)
+
+	var boitencarton models.Student
+	var michelforever models.Student
+	for _, elem := range res.StudentData {
+		if elem.Name == "Boite ENCARTON" {
+			boitencarton = elem
+		}
+		if elem.Name == "Michel FOREVER" {
+			michelforever = elem
+		}
+	}
+
+	assert.True(t, boitencarton.OK)
+	assert.False(t, michelforever.OK)
 }

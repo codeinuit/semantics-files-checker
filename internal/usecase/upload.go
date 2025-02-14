@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func CheckZipFilesSemantics(log *logrus.Logger, files []*zip.File) []string {
+func CheckZipFilesSemantics(log *logrus.Logger, files []*zip.File) []models.Student {
 	students := make(map[string]models.Student)
 
 	for _, file := range files {
@@ -32,8 +32,13 @@ func CheckZipFilesSemantics(log *logrus.Logger, files []*zip.File) []string {
 			folder := filepath.Base(filepath.Dir(file.Name))
 			log.Infof("file %s in folder %s", filepath.Base(file.Name), folder)
 			stu := students[student]
+			filename := filepath.Base(file.Name)
+			if filepath.Ext(filename) == ".txt" {
+				stu.OK = true
+			}
+
 			stu.Files = append(stu.Files, models.File{
-				Name: filepath.Base(file.Name),
+				Name: filename,
 				Path: file.Name,
 			})
 
@@ -41,8 +46,8 @@ func CheckZipFilesSemantics(log *logrus.Logger, files []*zip.File) []string {
 		}
 	}
 
-	res := []string{}
-	for n := range students {
+	res := []models.Student{}
+	for _, n := range students {
 		res = append(res, n)
 	}
 

@@ -41,7 +41,10 @@ func (h Handler) UploadZip(c *gin.Context) {
 	}
 
 	var resp models.UploadResultResponse
-	resp.Students = usecase.CheckZipFilesSemantics(h.Log, zr.File)
+	resp.StudentData = usecase.CheckZipFilesSemantics(h.Log, zr.File)
+	for _, student := range resp.StudentData {
+		resp.Students = append(resp.Students, student.Name)
+	}
 	c.JSON(http.StatusOK, resp)
 }
 
