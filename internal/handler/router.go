@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"strings"
 
 	"github.com/codeinuit/semantics-files-checker/internal/models"
+	"github.com/codeinuit/semantics-files-checker/internal/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -40,45 +40,8 @@ func (h Handler) UploadZip(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, nil)
 	}
 
-	students := make(map[string]models.Student)
-
-	for _, file := range zr.File {
-		slice := strings.Split(file.Name, "/")
-		if len(slice) <= 1 {
-			continue
-		}
-
-		student := slice[1]
-
-		_, ok := students[student]
-		if !ok {
-			h.Log.Debugf("added path: %s", student)
-			students[student] = models.Student{
-				Name: student,
-			}
-		}
-
-		if !file.FileInfo().IsDir() {
-			folder := filepath.Base(filepath.Dir(file.Name))
-			h.Log.Infof("file %s in folder %s", filepath.Base(file.Name), folder)
-			//students[student] = append(students[student], filepath.Base(file.Name))
-			stu := students[student]
-			stu.Files = append(stu.Files, models.File{
-				Name: filepath.Base(file.Name),
-				Path: file.Name,
-			})
-
-			students[student] = stu
-		}
-	}
-
 	var resp models.UploadResultResponse
-	for n := range students {
-		resp.Students = append(resp.Students, n)
-	}
-
-	h.Log.Info(students)
-
+	resp.Students = usecase.CheckZipFilesSemantics(h.Log, zr.File)
 	c.JSON(http.StatusOK, resp)
 }
 
